@@ -3,17 +3,28 @@ using Microsoft.AspNetCore.Mvc;
 using Waes.Diffly.Api.Dtos;
 using Waes.Diffly.Core.Domain.Enums;
 using Waes.Diffly.Core.Interfaces.Repositories;
+using Waes.Diffly.Core.Interfaces.Domain;
+using Waes.Diffly.Core.Domain.Entities;
 
 namespace Waes.Diffly.Api.Controllers
 {
     [Route("v1/[controller]")]
     public class DiffController : Controller
     {
-        private readonly IDiffRepository _repository;
+        private readonly IDiffService _service;
 
-        public DiffController(IDiffRepository diffRepository)
+        public DiffController(IDiffService service)
         {
-            _repository = diffRepository;    
+            _service = service;    
+        }
+
+        /// <summary>
+        /// Dummy controller for now, in order to see the app running.
+        /// </summary>
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return Ok("Hello world!");
         }
 
         /// <summary>
@@ -30,13 +41,16 @@ namespace Waes.Diffly.Api.Controllers
         [HttpPost("{id}/{side}")]
         public IActionResult Post(int id, DiffSide side, [FromBody]DiffRequestDto value)
         {
-            if (side == DiffSide.Unknown)
-            {
-                throw new NotSupportedException($"Side provided is not supported. Side should be '{DiffSide.Left.ToString().ToLower()}' or '{DiffSide.Right.ToString().ToLower()}'.");
-            }
-
+            _service.Add(id, side, value.EncodedData);
             return Ok();
         }
+
+        //[HttpPut("{id}/{side}")]
+        //public IActionResult Put(int id, DiffSide side, [FromBody]DiffRequestDto value)
+        //{
+        //    _service.AddOrUpdate(id, side, value.EncodedData);
+        //    return Ok();
+        //}
     }
 }
 

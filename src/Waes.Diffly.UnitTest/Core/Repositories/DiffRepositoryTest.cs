@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Text;
+using Waes.Diffly.Core.Domain.Entities;
 using Waes.Diffly.Core.Domain.Enums;
+using Waes.Diffly.Core.Domain.Helpers;
 using Waes.Diffly.Core.Interfaces.Repositories;
 using Waes.Diffly.Core.Repositories;
 using Xunit;
@@ -8,7 +11,10 @@ namespace Waes.Diffly.UnitTest.Core.Repositories
 {
     public class DiffRepositoryTest
     {
-        IDiffRepository _repo;
+        private static string value1 = Convert.ToString(192, 2); // 11000000 (0xc0)
+        private static string value1Base64 = StringHelper.ToAsciiBase64(value1);
+
+        private readonly IDiffRepository _repo;
 
         public DiffRepositoryTest()
         {
@@ -17,25 +23,25 @@ namespace Waes.Diffly.UnitTest.Core.Repositories
         }
 
         [Fact]
-        public void Add_AddsValueToLeft_ValueIsPresentInRepositoryAfterTheAdd()
+        public void Add_AddsEncodedValueToLeft_DiffEntityIsCreatedAndHasValueInLeft()
         {
-            string value = Convert.ToString(10, 2);
-            _repo.Add(1, DiffSide.Left, value);
+            var entity = new DiffEntity(1, DiffSide.Left, value1Base64);
+            _repo.Add(entity);
 
-            string actual = _repo.GetById(1, DiffSide.Left);
+            var actual = _repo.GetById(1);
 
-            Assert.Equal(value, actual);
+            Assert.Equal(value1, actual.Left);
         }
 
         [Fact]
-        public void Add_AddsValueToLeft_ValueIsPresentInRight()
+        public void Add_AddsEncodedValueOnlyToLeft_ValueIsNotPresentInRight()
         {
-            string value = Convert.ToString(10, 2);
-            _repo.Add(1, DiffSide.Left, value);
+            var entity = new DiffEntity(1, DiffSide.Left, value1Base64);
+            _repo.Add(entity);
 
-            string actual = _repo.GetById(1, DiffSide.Right);
+            var actual = _repo.GetById(1);
 
-            Assert.Equal(null, actual);
+            Assert.Equal(null, actual.Right);
         }
     }
 }

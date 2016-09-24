@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Waes.Diffly.Core.Domain;
+using Waes.Diffly.Core.Interfaces.Domain;
 using Waes.Diffly.Core.Interfaces.Repositories;
 using Waes.Diffly.Core.Repositories;
 
@@ -38,7 +40,7 @@ namespace Waes.Diffly.Api
 
             // Application services
             services.AddSingleton<IDiffRepository, DiffRepository>();
-
+            services.AddSingleton<IDiffService, DiffService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
