@@ -18,35 +18,41 @@ namespace Waes.Diffly.Core.Domain
 
         public void Add(int id, DiffSide side, string encodedData)
         {
-            var value = _repository.GetById(id);
-            if (value == null)
-            {
-                value = new DiffEntity(id, side, encodedData);
-            }
-            else
-            {
-                if (side == DiffSide.Left && value.Left != null)
-                {
-                    throw new DiffDomainException("Left value already set!", 409);
-                }
-                else if (side == DiffSide.Right && value.Right != null)
-                {
-                    throw new DiffDomainException("Right value already set!", 409);
-                }
-                value.AssignSideProperty(side, encodedData, true);
-            }
+            AddPrivate(id, side, encodedData, allowUpdateSideProperty: false);
         }
 
         public void AddOrUpdate(int id, DiffSide side, string encodedData)
         {
-            var value = _repository.GetById(id);
-            if (value == null)
+            AddPrivate(id, side, encodedData, allowUpdateSideProperty: true);
+        }
+
+        private void AddPrivate(int id, DiffSide side, string encodedData, bool allowUpdateSideProperty)
+        {
+            var entity = _repository.GetById(id);
+            if (entity == null)
             {
-                value = new DiffEntity(id, side, encodedData);
+                entity = new DiffEntity(id, side, encodedData);
+                _repository.Add(entity);
             }
             else
             {
-                value.AssignSideProperty(side, encodedData, true);
+                if (!allowUpdateSideProperty)
+                {
+                    ThrowIfSidePropertyHasValue(side, entity);
+                }
+                entity.AssignSideProperty(side, encodedData, true);
+            }
+        }
+
+        private void ThrowIfSidePropertyHasValue(DiffSide side, DiffEntity diffEntity)
+        {
+            if (side == DiffSide.Left && diffEntity.Left != null)
+            {
+                throw new DiffDomainException("Left value already set!", 409);
+            }
+            else if (side == DiffSide.Right && diffEntity.Right != null)
+            {
+                throw new DiffDomainException("Right value already set!", 409);
             }
         }
     }

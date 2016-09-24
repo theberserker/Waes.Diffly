@@ -45,12 +45,12 @@ namespace Waes.Diffly.Api.Controllers
             return Ok();
         }
 
-        //[HttpPut("{id}/{side}")]
-        //public IActionResult Put(int id, DiffSide side, [FromBody]DiffRequestDto value)
-        //{
-        //    _service.AddOrUpdate(id, side, value.EncodedData);
-        //    return Ok();
-        //}
+        [HttpPut("{id}/{side}")]
+        public IActionResult Put(int id, DiffSide side, [FromBody]DiffRequestDto value)
+        {
+            _service.AddOrUpdate(id, side, value.EncodedData);
+            return Ok();
+        }
     }
 }
 
