@@ -64,7 +64,7 @@ namespace Waes.Diffly.Core.Domain.Entities
                     Right = bytes;
                     break;
                 default:
-                    throw new DiffDomainException($"Side provided is not supported. Side should be '{DiffSide.Left.ToString().ToLower()}' or '{DiffSide.Right.ToString().ToLower()}'.", 400);
+                    throw new DiffDomainException($"Side provided is not supported. Side should be '{DiffSide.Left.ToString().ToLower()}' or '{DiffSide.Right.ToString().ToLower()}'.");
             }
         }
     }

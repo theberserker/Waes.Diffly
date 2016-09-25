@@ -1,10 +1,7 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Waes.Diffly.Api.Dtos;
 using Waes.Diffly.Core.Domain.Enums;
-using Waes.Diffly.Core.Interfaces.Repositories;
 using Waes.Diffly.Core.Interfaces.Domain;
-using Waes.Diffly.Core.Domain.Entities;
 
 namespace Waes.Diffly.Api.Controllers
 {
@@ -18,37 +15,41 @@ namespace Waes.Diffly.Api.Controllers
             _service = service;    
         }
 
-        /// <summary>
-        /// Dummy controller for now, in order to see the app running.
-        /// </summary>
-        [HttpGet]
-        public IActionResult Get()
-        {
-            return Ok("Hello world!");
-        }
 
         /// <summary>
         /// Action that returns the diff for the provided id.
         /// GET v1/diff/{id}
         /// </summary>
-        /// <returns>The diff result</returns>
+        /// <returns>The diff result.</returns>
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            throw new NotImplementedException();
+            var diffResult = _service.Diff(id);
+            var dto = new DiffResultDto(diffResult.Item1, diffResult.Item2);
+            return Ok(dto);
         }
 
+        /// <summary>
+        /// Action that creates the instance to diff on the provided side.
+        /// POST /v1/diff/{id}/left or POST /v1/diff/{id}/right 
+        /// </summary>
+        /// <returns>Only HTTP status code.</returns>
         [HttpPost("{id}/{side}")]
-        public IActionResult Post(int id, DiffSide side, [FromBody]DiffRequestDto value)
+        public IActionResult Post(int id, DiffSide side, [FromBody]DiffRequestDto requestDto)
         {
-            _service.Add(id, side, value.EncodedData);
+            _service.Add(id, side, requestDto.EncodedData);
             return Ok();
         }
 
+        /// <summary>
+        /// Action that creates or updates the instance to diff on the provided side.
+        /// PUT /v1/diff/{id}/left or PUT /v1/diff/{id}/right 
+        /// </summary>
+        /// <returns>Only HTTP status code.</returns>
         [HttpPut("{id}/{side}")]
-        public IActionResult Put(int id, DiffSide side, [FromBody]DiffRequestDto value)
+        public IActionResult Put(int id, DiffSide side, [FromBody]DiffRequestDto requestDto)
         {
-            _service.AddOrUpdate(id, side, value.EncodedData);
+            _service.AddOrUpdate(id, side, requestDto.EncodedData);
             return Ok();
         }
     }

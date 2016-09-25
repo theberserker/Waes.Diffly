@@ -28,7 +28,7 @@ namespace Waes.Diffly.Core.Domain
         /// <param name="encodedData">Base64 encoded data for diffing.</param>
         public void Add(int id, DiffSide side, string encodedData)
         {
-            Add(id, side, encodedData, ThrowIfSidePropertyHasValue);
+            AddOrUpdatePrivate(id, side, encodedData, ThrowIfSidePropertyHasValue);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Waes.Diffly.Core.Domain
         /// <param name="encodedData">Base64 encoded data for diffing.</param>
         public void AddOrUpdate(int id, DiffSide side, string encodedData)
         {
-            Add(id, side, encodedData);
+            AddOrUpdatePrivate(id, side, encodedData);
         }
 
         /// <summary>
@@ -50,10 +50,9 @@ namespace Waes.Diffly.Core.Domain
         public Tuple<DiffResultType, IEnumerable<int>> Diff(int id)
         {
             var entity = _repository.GetById(id);
-            if (entity?.Left == null || entity?.Right == null)
-            {
-                throw new DiffDomainException("Can not diff because not both diff sides were provided.", 400);
-            }
+
+            ThrowIfAnyDiffPropertyNull(entity);
+
             if (entity.Left.Length != entity.Right.Length)
             {
                 return new Tuple<DiffResultType, IEnumerable<int>>(DiffResultType.NotEqualSize, Enumerable.Empty<int>());
@@ -72,7 +71,7 @@ namespace Waes.Diffly.Core.Domain
         /// <param name="side">Side of diff.</param>
         /// <param name="encodedData">Base64 encoded data for diffing.</param>
         /// <param name="allowUpdateSideProperty">Notes if updating of the value is possible, throws exception otherwise.</param>
-        private void Add(int id, DiffSide side, string encodedData, Action<DiffSide, DiffEntity> onUpdate = null)
+        private void AddOrUpdatePrivate(int id, DiffSide side, string encodedData, Action<DiffSide, DiffEntity> onUpdate = null)
         {
             var entity = _repository.GetById(id);
             if (entity == null)
@@ -86,7 +85,6 @@ namespace Waes.Diffly.Core.Domain
                 entity.AssignSideProperty(side, encodedData);
             }
         }
-
 
         /// <summary>
         /// Finds the diffrences in the provided same lenght byte arrays.
@@ -110,15 +108,31 @@ namespace Waes.Diffly.Core.Domain
             }
         }
 
+        private static void ThrowIfAnyDiffPropertyNull(DiffEntity entity)
+        {
+            if (entity == null)
+            {
+                throw new DiffDomainException($"Can not diff because no entry was provided for this id.");
+            }
+            if (entity.Left == null)
+            {
+                throw new DiffDomainException("Can not diff because left side was not provided.");
+            }
+            if (entity.Right == null)
+            {
+                throw new DiffDomainException("Can not diff because right side was not provided.");
+            }
+        }
+
         private static void ThrowIfSidePropertyHasValue(DiffSide side, DiffEntity diffEntity)
         {
             if (side == DiffSide.Left && diffEntity.Left != null)
             {
-                throw new DiffDomainException("Left value already set!", 400);
+                throw new DiffDomainException("Left value already set! Maybe you want to update it using PUT?");
             }
             else if (side == DiffSide.Right && diffEntity.Right != null)
             {
-                throw new DiffDomainException("Right value already set!", 400);
+                throw new DiffDomainException("Right value already set! Maybe you want to update it using PUT?");
             }
         }
     }

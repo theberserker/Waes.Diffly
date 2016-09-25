@@ -6,6 +6,9 @@ using Waes.Diffly.Api.Dtos.Enums;
 
 namespace Waes.Diffly.Api.Dtos
 {
+    /// <summary>
+    /// Result object of the diff operation.
+    /// </summary>
     public class DiffResultDto
     {
         public DiffResultDto(DiffResultType result)
@@ -18,7 +21,14 @@ namespace Waes.Diffly.Api.Dtos
             this.Diffs = diffs;
         }
 
+        /// <summary>
+        /// Result enum of the diff operation.
+        /// </summary>
         public DiffResultType Result { get; set; }
+
+        /// <summary>
+        /// Indexes that differ in the diff operation.
+        /// </summary>
         public IEnumerable<int> Diffs { get; set; }
     }
 }

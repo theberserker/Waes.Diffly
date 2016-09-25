@@ -13,14 +13,5 @@ namespace Waes.Diffly.Core.Exceptions
         public DiffDomainException(string message) : base(message)
         {
         }
-
-        public DiffDomainException(string message, int code) : base(message)
-        {
-            this.ErrorCode = code;
-        }
-
-        public int? ErrorCode { get; private set; }
-
-        public bool ReflectAsHttpErrorCode => ErrorCode.HasValue && ErrorCode.Value >= 400 && ErrorCode < 600;
     }
 }

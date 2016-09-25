@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Waes.Diffly.Api.Infrastructure;
 using Waes.Diffly.Core.Domain;
 using Waes.Diffly.Core.Interfaces.Domain;
 using Waes.Diffly.Core.Interfaces.Repositories;
@@ -34,13 +35,22 @@ namespace Waes.Diffly.Api
         // This method gets called by the runtime. Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
         {
+            var loggerFactory = new LoggerFactory();
+            loggerFactory.AddConsole();
+            loggerFactory.AddDebug();
+
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
-            services.AddMvc();
-
+            services.AddMvc(
+            config =>
+            {
+                config.Filters.Add(new GlobalLoggingExceptionFilter(loggerFactory));
+                config.Filters.Add(new CustomExceptionFilterAttribute());
+            });
+            
             // Application services
             services.AddSingleton<IDiffRepository, DiffRepository>();
-            services.AddSingleton<IDiffService, DiffService>();
+            services.AddSingleton<IDiffService, DiffService>(); // this can be a singleton until it will have some state.
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
