@@ -28,7 +28,7 @@ namespace Waes.Diffly.Core.Domain
         /// <param name="encodedData">Base64 encoded data for diffing.</param>
         public void Add(int id, DiffSide side, string encodedData)
         {
-            Add(id, side, encodedData, allowUpdateSideProperty: false);
+            Add(id, side, encodedData, ThrowIfSidePropertyHasValue);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Waes.Diffly.Core.Domain
         /// <param name="encodedData">Base64 encoded data for diffing.</param>
         public void AddOrUpdate(int id, DiffSide side, string encodedData)
         {
-            Add(id, side, encodedData, allowUpdateSideProperty: true);
+            Add(id, side, encodedData);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Waes.Diffly.Core.Domain
         /// <param name="side">Side of diff.</param>
         /// <param name="encodedData">Base64 encoded data for diffing.</param>
         /// <param name="allowUpdateSideProperty">Notes if updating of the value is possible, throws exception otherwise.</param>
-        private void Add(int id, DiffSide side, string encodedData, bool allowUpdateSideProperty)
+        private void Add(int id, DiffSide side, string encodedData, Action<DiffSide, DiffEntity> onUpdate = null)
         {
             var entity = _repository.GetById(id);
             if (entity == null)
@@ -82,10 +82,7 @@ namespace Waes.Diffly.Core.Domain
             }
             else
             {
-                if (!allowUpdateSideProperty)
-                {
-                    ThrowIfSidePropertyHasValue(side, entity);
-                }
+                onUpdate?.Invoke(side, entity);
                 entity.AssignSideProperty(side, encodedData);
             }
         }

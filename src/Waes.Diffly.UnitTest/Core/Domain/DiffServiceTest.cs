@@ -1,8 +1,5 @@
 ﻿using Moq;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Waes.Diffly.Api.Dtos.Enums;
 using Waes.Diffly.Core.Domain;
 using Waes.Diffly.Core.Domain.Entities;
