@@ -11,13 +11,13 @@ namespace Waes.Diffly.Api.Dtos
     /// </summary>
     public class DiffResultDto
     {
-        public DiffResultDto(DiffResultType result)
+        public DiffResultDto()
         {
-            this.Result = result;
         }
 
-        public DiffResultDto(DiffResultType result, IEnumerable<int> diffs) : this(result)
+        public DiffResultDto(DiffResultType result, IEnumerable<int> diffs) : this()
         {
+            this.Result = result;
             this.Diffs = diffs;
         }
 
