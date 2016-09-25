@@ -16,8 +16,8 @@ namespace Waes.Diffly.UnitTest.Core.Domain
 {
     public class DiffServiceTest
     {
-        private static string value1 = Convert.ToString(192, 2); // 11000000 (0xc0)
-        private static string value1Base64 = StringHelper.ToAsciiBase64(value1);
+        private static string value1 = Convert.ToString(192, 16); // 11000000 (0xc0)
+        private static string value1Base64 = ConvertHelper.ToAsciiBase64(value1);
 
         private readonly Mock<IDiffRepository> _mockRepository;
         private readonly IDiffService _service;
@@ -32,7 +32,7 @@ namespace Waes.Diffly.UnitTest.Core.Domain
         public void Add_AddingEntity_CallsAddOnReposotory()
         {
             _mockRepository.Setup(x => x.Add(It.IsAny<DiffEntity>()));
-            _service.Add(1, DiffSide.Left, value1);
+            _service.Add(1, DiffSide.Left, value1Base64);
 
             _mockRepository.Verify(x => x.Add(It.IsAny<DiffEntity>()));
         }
@@ -41,12 +41,12 @@ namespace Waes.Diffly.UnitTest.Core.Domain
         public void Add_AddingIdAndSideThatAlreadyExists_ThrowsException()
         {
             int id = 1;
-            var entity = new DiffEntity(id, DiffSide.Left, value1);
+            var entity = new DiffEntity(id, DiffSide.Left, value1Base64);
             
             _mockRepository.Setup(x => x.GetById(id)).Returns(entity);
             _mockRepository.Setup(x => x.Add(It.IsAny<DiffEntity>()));
 
-            Assert.Throws<DiffDomainException>(() => _service.Add(id, DiffSide.Left, value1));
+            Assert.Throws<DiffDomainException>(() => _service.Add(id, DiffSide.Left, value1Base64));
         }
 
     }

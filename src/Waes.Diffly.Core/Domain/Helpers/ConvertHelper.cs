@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Waes.Diffly.Core.Domain.Helpers
 {
-    public static class StringHelper
+    public static class ConvertHelper
     {
         public static string FromAsciiBase64(string base64Encoded)
         {

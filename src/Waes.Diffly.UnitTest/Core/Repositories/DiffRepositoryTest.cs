@@ -12,7 +12,7 @@ namespace Waes.Diffly.UnitTest.Core.Repositories
     public class DiffRepositoryTest
     {
         private static string value1 = Convert.ToString(192, 2); // 11000000 (0xc0)
-        private static string value1Base64 = StringHelper.ToAsciiBase64(value1);
+        private static string value1Base64 = ConvertHelper.ToAsciiBase64(value1);
 
         private readonly IDiffRepository _repo;
 

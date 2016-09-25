@@ -1,12 +1,13 @@
 ﻿using System;
 using Waes.Diffly.Core.Domain.Enums;
 using Waes.Diffly.Core.Domain.Helpers;
+using Waes.Diffly.Core.Exceptions;
 
 namespace Waes.Diffly.Core.Domain.Entities
 {
     public class DiffEntity
     {
-        private static Func<string, string> _decodeFunc = StringHelper.FromAsciiBase64;
+        private static Func<string, string> _decodeFunc = ConvertHelper.FromAsciiBase64;
 
         public DiffEntity(int id, DiffSide side, string base64Value)
         {
@@ -38,8 +39,7 @@ namespace Waes.Diffly.Core.Domain.Entities
                     Right = decode ? _decodeFunc(diffValue) : diffValue;
                     break;
                 default:
-                    throw new NotSupportedException($"Side provided is not supported. Side should be '{DiffSide.Left.ToString().ToLower()}' or '{DiffSide.Right.ToString().ToLower()}'.");
-
+                    throw new DiffDomainException($"Side provided is not supported. Side should be '{DiffSide.Left.ToString().ToLower()}' or '{DiffSide.Right.ToString().ToLower()}'.", 400);
             }
         }
     }
