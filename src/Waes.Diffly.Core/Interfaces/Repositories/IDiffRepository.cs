@@ -16,7 +16,7 @@ namespace Waes.Diffly.Core.Interfaces.Repositories
         /// <summary>
         /// Adds item to the repository.
         /// </summary>
-        void Add(DiffEntity entity);
+        void AddOrUpdate(DiffEntity entity);
 
         //DiffRequestDto Find(int id);
         //DiffRequestDto Remove(int id);

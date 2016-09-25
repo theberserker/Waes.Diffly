@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
-using Waes.Diffly.Api.Dtos;
+﻿using System.Collections.Concurrent;
 using Waes.Diffly.Core.Domain.Entities;
-using Waes.Diffly.Core.Domain.Enums;
 using Waes.Diffly.Core.Interfaces.Repositories;
 
 namespace Waes.Diffly.Core.Repositories
@@ -11,7 +8,7 @@ namespace Waes.Diffly.Core.Repositories
     {
         private static ConcurrentDictionary<int, DiffEntity> _dictionary = new ConcurrentDictionary<int, DiffEntity>();
 
-        public void Add(DiffEntity entity)
+        public void AddOrUpdate(DiffEntity entity)
         {
             _dictionary.AddOrUpdate(entity.Id, entity, (key, oldValue) => entity);
         }
