@@ -13,5 +13,9 @@ namespace Waes.Diffly.Core.Exceptions
         public DiffDomainException(string message) : base(message)
         {
         }
+
+        public DiffDomainException(string message, Exception ex) : base(message, ex)
+        {
+        }
     }
 }

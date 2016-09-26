@@ -112,7 +112,7 @@ namespace Waes.Diffly.Core.Domain
         {
             if (entity == null)
             {
-                throw new DiffDomainException($"Can not diff because no entry was provided for this id.");
+                throw new DiffDomainException($"Can not perform diff because no entry was provided for this id.");
             }
             if (entity.Left == null)
             {

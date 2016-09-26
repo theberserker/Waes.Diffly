@@ -45,7 +45,15 @@ namespace Waes.Diffly.Core.Domain.Entities
         /// <param name="base64string">Base64 encoded string of the binary data submitted for diff.</param>
         public void AssignSideProperty(DiffSide side, string base64string)
         {
-            AssignSideProperty(side, Convert.FromBase64String(base64string));
+            try
+            {
+                byte[] bytes = Convert.FromBase64String(base64string);
+                AssignSideProperty(side, bytes);
+            }
+            catch (FormatException ex)
+            {
+                throw new DiffDomainException("The provided string was not in the Base64 format", ex);
+            }
         }
 
         /// <summary>
