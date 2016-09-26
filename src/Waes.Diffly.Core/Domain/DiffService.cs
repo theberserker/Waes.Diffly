@@ -50,18 +50,12 @@ namespace Waes.Diffly.Core.Domain
         public Tuple<DiffResultType, IEnumerable<int>> Diff(int id)
         {
             var entity = _repository.GetById(id);
-
-            ThrowIfAnyDiffPropertyNull(entity);
-
-            if (entity.Left.Length != entity.Right.Length)
+            if (entity == null)
             {
-                return new Tuple<DiffResultType, IEnumerable<int>>(DiffResultType.NotEqualSize, Enumerable.Empty<int>());
+                throw new DiffDomainException($"Can not perform diff because no entry was provided for this id.");
             }
 
-            var diff = FindByteArrayDiff(entity.Left, entity.Right);
-            var resultType = diff.Any() ? DiffResultType.NotEqual : DiffResultType.Equal;
-
-            return new Tuple<DiffResultType, IEnumerable<int>>(resultType, diff);
+            return entity.DiffResult;
         }
 
         /// <summary>
@@ -83,44 +77,6 @@ namespace Waes.Diffly.Core.Domain
             {
                 onUpdate?.Invoke(side, entity);
                 entity.AssignSideProperty(side, encodedData);
-            }
-        }
-
-        /// <summary>
-        /// Finds the diffrences in the provided same lenght byte arrays.
-        /// </summary>
-        /// <param name="bytes1">First set of bytes.</param>
-        /// <param name="bytes2">Second set of bytes.</param>
-        /// <returns></returns>
-        public static IEnumerable<int> FindByteArrayDiff(byte[] bytes1, byte[] bytes2)
-        {
-            if (bytes1.Length != bytes2.Length)
-            {
-                throw new ArgumentException("Byte arrays are of different length. Method expects same lenght arguments.");
-            }
-
-            for (int i = 0; i < bytes1.Length; i++)
-            {
-                if (bytes1[i] != bytes2[i])
-                {
-                    yield return i;
-                }
-            }
-        }
-
-        private static void ThrowIfAnyDiffPropertyNull(DiffEntity entity)
-        {
-            if (entity == null)
-            {
-                throw new DiffDomainException($"Can not perform diff because no entry was provided for this id.");
-            }
-            if (entity.Left == null)
-            {
-                throw new DiffDomainException("Can not diff because left side was not provided.");
-            }
-            if (entity.Right == null)
-            {
-                throw new DiffDomainException("Can not diff because right side was not provided.");
             }
         }
 

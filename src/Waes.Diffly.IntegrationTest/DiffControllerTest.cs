@@ -43,14 +43,13 @@ namespace Waes.Diffly.IntegrationTest
         /// <param name="expectedResult">Result expected from API.</param>
         /// <returns></returns>
         [Theory]
-        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", DiffResultType.Equal)]
-        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "QUJDRERB", DiffResultType.NotEqualSize)]
-        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "VGhpcyBpcyB3b3JraW5nIGdyZWF0Lg==", DiffResultType.NotEqual)]
+        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", DiffResultType.Equal, 1)]
+        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "QUJDRERB", DiffResultType.NotEqualSize, 2)]
+        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "VGhpcyBpcyB3b3JraW5nIGdyZWF0Lg==", DiffResultType.NotEqual, 3)]
         public async Task PutToLeftAndPutToRightAndDiff_Returns200InAllCases_DiffResultAsExpected(
-            string encodedDataLeft, string encodedDataRight, DiffResultType expectedResult)
+            string encodedDataLeft, string encodedDataRight, DiffResultType expectedResult, int id)
         {
             // Arrange
-            int id = 1;
             var requestDto1 = new DiffRequestDto() { EncodedData = encodedDataLeft};
             var requestDto2 = new DiffRequestDto() { EncodedData = encodedDataRight};
 
@@ -75,7 +74,7 @@ namespace Waes.Diffly.IntegrationTest
         public async Task DoPostRequestTwiceForSameIdAndSide_Returns400AndErrorDto()
         {
             // Arrange
-            int id = 2;
+            int id = 20;
             var requestDto = new DiffRequestDto() { EncodedData = "VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==" };
             string leftUri = _apiLeftFactory(id);
 
@@ -94,7 +93,7 @@ namespace Waes.Diffly.IntegrationTest
         [Fact]
         public async Task DiffSideRouteConstraint_WhenRouteIsNotLeftOrRight_404Returned()
         {
-            int id = 3;
+            int id = 30;
             var requestDto = new DiffRequestDto() { EncodedData = "VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==" };
             string uri = $"{_apiBase}{id}/something";
 
