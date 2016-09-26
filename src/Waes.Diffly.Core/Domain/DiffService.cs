@@ -28,7 +28,15 @@ namespace Waes.Diffly.Core.Domain
         /// <param name="encodedData">Base64 encoded data for diffing.</param>
         public void Add(int id, DiffSide side, string encodedData)
         {
-            AddOrUpdatePrivate(id, side, encodedData, ThrowIfSidePropertyHasValue);
+            var factory = new Func<DiffEntity>(() => new DiffEntity(id, side, encodedData));
+            var onUpdate = new Func<DiffEntity, DiffEntity>(entity =>
+                {
+                    ThrowIfSidePropertyHasValue(side, entity);
+                    entity.AssignSideProperty(side, encodedData);
+                    return entity;
+                });
+
+            _repository.AddOrUpdate(id, factory, onUpdate);
         }
 
         /// <summary>
@@ -39,7 +47,14 @@ namespace Waes.Diffly.Core.Domain
         /// <param name="encodedData">Base64 encoded data for diffing.</param>
         public void AddOrUpdate(int id, DiffSide side, string encodedData)
         {
-            AddOrUpdatePrivate(id, side, encodedData);
+            var factory = new Func<DiffEntity>(() => new DiffEntity(id, side, encodedData));
+            var onUpdate = new Func<DiffEntity, DiffEntity>(entity => 
+                {
+                    entity.AssignSideProperty(side, encodedData);
+                    return entity;
+                });
+
+            _repository.AddOrUpdate(id, factory, onUpdate);
         }
 
         /// <summary>
@@ -65,29 +80,8 @@ namespace Waes.Diffly.Core.Domain
         }
 
         /// <summary>
-        /// Adds or updates the provided data to the repository.
-        /// </summary>
-        /// <param name="id">Id for the diff.</param>
-        /// <param name="side">Side of diff.</param>
-        /// <param name="encodedData">Base64 encoded data for diffing.</param>
-        /// <param name="allowUpdateSideProperty">Notes if updating of the value is possible, throws exception otherwise.</param>
-        private void AddOrUpdatePrivate(int id, DiffSide side, string encodedData, Action<DiffSide, DiffEntity> onUpdate = null)
-        {
-            var entity = _repository.GetById(id);
-            if (entity == null)
-            {
-                entity = new DiffEntity(id, side, encodedData);
-                _repository.AddOrUpdate(entity);
-            }
-            else
-            {
-                onUpdate?.Invoke(side, entity);
-                entity.AssignSideProperty(side, encodedData);
-            }
-        }
-
-        /// <summary>
         /// Finds the diffrences in the provided same lenght byte arrays.
+        /// TODO: THIS SHOULD BE OPTIMIZED at least naively and maybe also paralelized (Parallel.Foreach)
         /// </summary>
         /// <param name="bytes1">First set of bytes.</param>
         /// <param name="bytes2">Second set of bytes.</param>

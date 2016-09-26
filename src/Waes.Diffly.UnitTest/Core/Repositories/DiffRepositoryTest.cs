@@ -21,26 +21,26 @@ namespace Waes.Diffly.UnitTest.Core.Repositories
 
         }
 
-        [Fact]
-        public void Add_AddsEncodedValueToLeft_DiffEntityIsCreatedAndHasValueInLeft()
-        {
-            var entity = new DiffEntity(1, DiffSide.Left, value1Base64);
-            _repo.AddOrUpdate(entity);
+        //    [Fact]
+        //    public void Add_AddsEncodedValueToLeft_DiffEntityIsCreatedAndHasValueInLeft()
+        //    {
+        //        var entity = new DiffEntity(1, DiffSide.Left, value1Base64);
+        //        _repo.AddOrUpdate(entity);
 
-            var actual = _repo.GetById(1);
+        //        var actual = _repo.GetById(1);
 
-            Assert.Equal(value1, actual.Left);
-        }
+        //        Assert.Equal(value1, actual.Left);
+        //    }
 
-        [Fact]
-        public void Add_AddsEncodedValueOnlyToLeft_ValueIsNotPresentInRight()
-        {
-            var entity = new DiffEntity(1, DiffSide.Left, value1Base64);
-            _repo.AddOrUpdate(entity);
+        //    [Fact]
+        //    public void Add_AddsEncodedValueOnlyToLeft_ValueIsNotPresentInRight()
+        //    {
+        //        var entity = new DiffEntity(1, DiffSide.Left, value1Base64);
+        //        _repo.AddOrUpdate(entity);
 
-            var actual = _repo.GetById(1);
+        //        var actual = _repo.GetById(1);
 
-            Assert.Equal(null, actual.Right);
-        }
+        //        Assert.Equal(null, actual.Right);
+        //    }
     }
 }

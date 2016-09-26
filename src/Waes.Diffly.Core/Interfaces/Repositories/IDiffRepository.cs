@@ -1,4 +1,5 @@
-﻿using Waes.Diffly.Api.Dtos;
+﻿using System;
+using Waes.Diffly.Api.Dtos;
 using Waes.Diffly.Core.Domain.Entities;
 using Waes.Diffly.Core.Domain.Enums;
 
@@ -16,10 +17,9 @@ namespace Waes.Diffly.Core.Interfaces.Repositories
         /// <summary>
         /// Adds item to the repository.
         /// </summary>
-        void AddOrUpdate(DiffEntity entity);
+        void AddOrUpdate(int id, Func<DiffEntity> addFactory, Func<DiffEntity, DiffEntity> updateAction);
 
-        //DiffRequestDto Find(int id);
-        //DiffRequestDto Remove(int id);
-        //void Update(DiffRequestDto item);
+        
+        //void AddOrUpdate(DiffEntity entity);
     }
 }
