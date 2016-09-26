@@ -90,5 +90,17 @@ namespace Waes.Diffly.IntegrationTest
             Assert.Equal(HttpStatusCode.BadRequest, response2.StatusCode);
             Assert.Equal(errorDto.Message, "Left value already set! Maybe you want to update it using PUT?");
         }
+
+        [Fact]
+        public async Task DiffSideRouteConstraint_WhenRouteIsNotLeftOrRight_404Returned()
+        {
+            int id = 3;
+            var requestDto = new DiffRequestDto() { EncodedData = "VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==" };
+            string uri = $"{_apiBase}{id}/something";
+
+            var response = await _client.PostAsync(uri, requestDto.ToJsonHttpContent());
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
     }
 }

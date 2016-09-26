@@ -21,7 +21,8 @@
         "Waes.Diffly.Core": "1.0.0-*",
         "Waes.Diffly.Api.Dtos": "1.0.0-*",
         "dotnet-test-xunit": "2.2.0-*",
-        "Moq": "4.6.36-*"
+        "Moq": "4.6.36-*",
+        "Waes.Diffly.Api": "1.0.0-*"
     },
     "frameworks": {
         "netcoreapp1.0": {

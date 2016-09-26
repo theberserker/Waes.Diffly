@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Waes.Diffly.Api.Infrastructure;
 using Waes.Diffly.Core.Domain;
+using Waes.Diffly.Core.Domain.Enums;
 using Waes.Diffly.Core.Interfaces.Domain;
 using Waes.Diffly.Core.Interfaces.Repositories;
 using Waes.Diffly.Core.Repositories;
@@ -41,13 +43,13 @@ namespace Waes.Diffly.Api
 
             // Add framework services.
             //services.AddApplicationInsightsTelemetry(Configuration);
-            services.AddMvc(
-            config =>
-            {
-                config.Filters.Add(new GlobalLoggingExceptionFilter(loggerFactory));
-                config.Filters.Add(new CustomExceptionFilterAttribute());
-            });
-            
+            services.AddMvc(config =>
+                {
+                    config.Filters.Add(new GlobalLoggingExceptionFilter(loggerFactory));
+                    config.Filters.Add(new CustomExceptionFilterAttribute());
+                });
+            services.Configure<RouteOptions>(options =>options.ConstraintMap.Add(nameof(DiffSide), typeof(DiffSideRouteConstraint)));
+
             // Application services
             services.AddSingleton<IDiffRepository, DiffRepository>();
             services.AddSingleton<IDiffService, DiffService>(); // this can be a singleton until it will have some state.

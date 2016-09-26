@@ -21,7 +21,7 @@ namespace Waes.Diffly.Api.Controllers
         /// GET v1/diff/{id}
         /// </summary>
         /// <returns>The diff result.</returns>
-        [HttpGet("{id}")]
+        [HttpGet("{id:int:min(1)}")]
         public IActionResult Get(int id)
         {
             var diffResult = _service.Diff(id);
@@ -34,7 +34,7 @@ namespace Waes.Diffly.Api.Controllers
         /// POST /v1/diff/{id}/left or POST /v1/diff/{id}/right 
         /// </summary>
         /// <returns>Only HTTP status code.</returns>
-        [HttpPost("{id}/{side}")]
+        [HttpPost("{id:int:min(1)}/{side:DiffSide}")]
         public IActionResult Post(int id, DiffSide side, [FromBody]DiffRequestDto requestDto)
         {
             _service.Add(id, side, requestDto.EncodedData);
@@ -46,7 +46,7 @@ namespace Waes.Diffly.Api.Controllers
         /// PUT /v1/diff/{id}/left or PUT /v1/diff/{id}/right 
         /// </summary>
         /// <returns>Only HTTP status code.</returns>
-        [HttpPut("{id}/{side}")]
+        [HttpPut("{id:int:min(1)}/{side:DiffSide}")]
         public IActionResult Put(int id, DiffSide side, [FromBody]DiffRequestDto requestDto)
         {
             _service.AddOrUpdate(id, side, requestDto.EncodedData);
