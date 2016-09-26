@@ -10,9 +10,9 @@ namespace Waes.Diffly.Core.Repositories
     {
         private static ConcurrentDictionary<int, DiffEntity> _dictionary = new ConcurrentDictionary<int, DiffEntity>();
 
-        public void AddOrUpdate(int id, Func<DiffEntity> addFactory, Func<DiffEntity, DiffEntity> updateAction)
+        public void AddOrUpdate(int id, Func<DiffEntity> addFactory, Func<DiffEntity, DiffEntity> updateAction = null)
         {
-            _dictionary.AddOrUpdate(id, addFactory(), (key, oldValue) => updateAction(oldValue));
+            _dictionary.AddOrUpdate(id, addFactory(), (key, oldValue) => updateAction == null ? oldValue : updateAction(oldValue));
         }
 
         public DiffEntity GetById(int id)

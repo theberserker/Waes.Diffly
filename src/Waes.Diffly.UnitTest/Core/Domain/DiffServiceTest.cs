@@ -1,4 +1,5 @@
 ﻿using Moq;
+using System;
 using System.Linq;
 using Waes.Diffly.Api.Dtos.Enums;
 using Waes.Diffly.Core.Domain;
@@ -24,26 +25,15 @@ namespace Waes.Diffly.UnitTest.Core.Domain
             _service = new DiffService(_mockRepository.Object);
         }
 
-        //[Fact]
-        //public void Add_AddingEntity_CallsAddOnReposotory()
-        //{
-        //    _mockRepository.Setup(x => x.AddOrUpdate(It.IsAny<DiffEntity>()));
-        //    _service.Add(1, DiffSide.Left, value1Base64);
+        [Fact]
+        public void Add_AddingEntity_CallsAddOnReposotory()
+        {
+            int id = 1;
+            _mockRepository.Setup(x => x.AddOrUpdate(id, It.IsAny<Func<DiffEntity>>(), It.IsAny<Func<DiffEntity, DiffEntity>>()));
+            _service.Add(id, DiffSide.Left, value1Base64);
 
-        //    _mockRepository.Verify(x => x.AddOrUpdate(It.IsAny<DiffEntity>()));
-        //}
-
-        //[Fact]
-        //public void Add_AddingIdAndSideThatAlreadyExists_ThrowsException()
-        //{
-        //    int id = 1;
-        //    var entity = new DiffEntity(id, DiffSide.Left, value1Base64);
-            
-        //    _mockRepository.Setup(x => x.GetById(id)).Returns(entity);
-        //    _mockRepository.Setup(x => x.AddOrUpdate(It.IsAny<DiffEntity>()));
-
-        //    Assert.Throws<DiffDomainException>(() => _service.Add(id, DiffSide.Left, value1Base64));
-        //}
+            _mockRepository.Verify(x => x.AddOrUpdate(id, It.IsAny<Func<DiffEntity>>(), It.IsAny<Func<DiffEntity, DiffEntity>>()));
+        }
 
         [Fact]
         public void Diff_TwoSameValuesAtLeftAndRight_ReturnsEqual()
