@@ -55,7 +55,7 @@ namespace Waes.Diffly.Core.Domain
                 throw new DiffDomainException($"Can not perform diff because no entry was provided for this id.");
             }
 
-            return entity.DiffResult;
+            return entity.GetDiffResult();
         }
 
         /// <summary>
@@ -67,9 +67,10 @@ namespace Waes.Diffly.Core.Domain
         /// <param name="allowUpdateSideProperty">Notes if updating of the value is possible, throws exception otherwise.</param>
         private void AddOrUpdatePrivate(int id, DiffSide side, string encodedData, Action<DiffSide, DiffEntity> onUpdate = null)
         {
-            var entity = _repository.GetById(id);
+            var entity = _repository.GetById(id); 
             if (entity == null)
             {
+                //TODO: Resolve - this GetById/Add is not really thread safe for the POST scenario.
                 entity = new DiffEntity(id, side, encodedData);
                 _repository.AddOrUpdate(entity);
             }

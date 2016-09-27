@@ -12,6 +12,10 @@ namespace Waes.Diffly.Core.Domain.Entities
     /// </summary>
     public class DiffEntity
     {
+        private byte[] _left;
+        private byte[] _right;
+        private Tuple<DiffResultType, IEnumerable<int>> _diffResult; // cached current diff result
+
         public DiffEntity(int id, DiffSide side, string base64Value)
         {
             Id = id;
@@ -33,26 +37,39 @@ namespace Waes.Diffly.Core.Domain.Entities
         /// <summary>
         /// Left side for the diff.
         /// </summary>
-        public byte[] Left { get; set; }
+        public byte[] Left
+        {
+            get { return _left; }
+            set
+            {
+                _left = value;
+                _diffResult = null; // reset the cached diff result;
+            }
+        }
 
         /// <summary>
         /// Right side for the diff.
         /// </summary>
-        public byte[] Right { get; set; }
-
-        public Tuple<DiffResultType, IEnumerable<int>> _diffResult;
-
-        public Tuple<DiffResultType, IEnumerable<int>> DiffResult
+        public byte[] Right
         {
-            get
+            get { return _right; }
+            set
             {
-                if (_diffResult == null)
-                {
-                    _diffResult = GetDiff();
-                }
-
-                return _diffResult;
+                _right = value;
+                _diffResult = null; // reset the cached diff result;
             }
+        }
+
+        /// <summary>
+        /// Gets the diff result between left and right side.
+        /// </summary>
+        public Tuple<DiffResultType, IEnumerable<int>> GetDiffResult()
+        {
+            if (_diffResult == null)
+            {
+                _diffResult = GetDiff();
+            }
+            return _diffResult;
         }
 
         private Tuple<DiffResultType, IEnumerable<int>> GetDiff()
