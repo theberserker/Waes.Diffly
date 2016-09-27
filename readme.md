@@ -40,5 +40,5 @@ Client errors are returned with status 400-Bad Request with JSON document contai
 
 Remarks and TODO
 -------------
- - TODO: Caching
+ - TODO: Improve diff algorithm. A lot.
  - DELETE for _/left_ and _/right_ is not yet supported.

@@ -89,6 +89,8 @@ namespace Waes.Diffly.Core.Domain.Entities
 
         /// <summary>
         /// Finds the diffrences in the provided same lenght byte arrays.
+        /// TODO: We should really do smarter algorithm here.
+        /// These are quite exotic (P/Invoke and unsafe code) suggesstions http://stackoverflow.com/questions/43289/comparing-two-byte-arrays-in-net
         /// </summary>
         /// <param name="bytes1">First set of bytes.</param>
         /// <param name="bytes2">Second set of bytes.</param>
