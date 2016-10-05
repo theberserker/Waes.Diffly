@@ -65,20 +65,15 @@ namespace Waes.Diffly.Core.Domain
         /// <param name="id">Id for the diff.</param>
         /// <param name="side">Side of diff.</param>
         /// <param name="encodedData">Base64 encoded data for diffing.</param>
-        /// <param name="allowUpdateSideProperty">Notes if updating of the value is possible, throws exception otherwise.</param>
+        /// <param name="onUpdate">Action to perform pre-update.</param>
         private void AddOrUpdatePrivate(int id, DiffSide side, string encodedData, Action<DiffSide, DiffEntity> onUpdate = null)
         {
-            var entity = _repository.GetById(id); 
-            if (entity == null)
+            var entity = new DiffEntity(id, side, encodedData);
+            var repoEntity = _repository.GetOrAdd(id, entity);
+            if (entity != repoEntity) // it is update of the entity in repository
             {
-                //TODO: Resolve - this GetById/Add is not really thread safe for the POST scenario.
-                entity = new DiffEntity(id, side, encodedData);
-                _repository.AddOrUpdate(entity);
-            }
-            else
-            {
-                onUpdate?.Invoke(side, entity);
-                entity.AssignSideProperty(side, encodedData);
+                onUpdate?.Invoke(side, repoEntity);
+                repoEntity.AssignSideProperty(side, encodedData);
             }
         }
 

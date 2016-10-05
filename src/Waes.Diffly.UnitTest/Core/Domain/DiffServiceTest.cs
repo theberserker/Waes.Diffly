@@ -25,23 +25,22 @@ namespace Waes.Diffly.UnitTest.Core.Domain
         }
 
         [Fact]
-        public void Add_AddingEntity_CallsAddOnReposotory()
+        public void Add_AddingLeftWhenRightAlreadyExists_CallsGetOrAddOnReposotory()
         {
-            _mockRepository.Setup(x => x.AddOrUpdate(It.IsAny<DiffEntity>()));
+            var entity = new DiffEntity(1, DiffSide.Right, value1Base64);
+            _mockRepository.Setup(x => x.GetOrAdd(1, It.IsAny<DiffEntity>())).Returns(entity);
             _service.Add(1, DiffSide.Left, value1Base64);
 
-            _mockRepository.Verify(x => x.AddOrUpdate(It.IsAny<DiffEntity>()));
+            _mockRepository.Verify(x => x.GetOrAdd(1, It.IsAny<DiffEntity>()));
         }
 
         [Fact]
-        public void Add_AddingIdAndSideThatAlreadyExists_ThrowsException()
+        public void Add_AddingLeftWhenLeftAlreadyExists_ThrowsException()
         {
             int id = 1;
             var entity = new DiffEntity(id, DiffSide.Left, value1Base64);
-            
-            _mockRepository.Setup(x => x.GetById(id)).Returns(entity);
-            _mockRepository.Setup(x => x.AddOrUpdate(It.IsAny<DiffEntity>()));
-
+            _mockRepository.Setup(x => x.GetOrAdd(id, It.IsAny<DiffEntity>())).Returns(entity);
+         
             Assert.Throws<DiffDomainException>(() => _service.Add(id, DiffSide.Left, value1Base64));
         }
 

@@ -16,10 +16,14 @@ namespace Waes.Diffly.Core.Interfaces.Repositories
         /// <summary>
         /// Adds item to the repository.
         /// </summary>
-        void AddOrUpdate(DiffEntity entity);
+        DiffEntity AddOrUpdate(DiffEntity entity);
 
-        //DiffRequestDto Find(int id);
-        //DiffRequestDto Remove(int id);
-        //void Update(DiffRequestDto item);
+        /// <summary>
+        /// Gets or adds the entity.
+        /// </summary>
+        /// <param name="id">Id of the entity.</param>
+        /// <param name="entity">The diff entity.</param>
+        /// <returns>The entity from repository if exists or the given entity argument that was added.</returns>
+        DiffEntity GetOrAdd(int id, DiffEntity entity);
     }
 }
