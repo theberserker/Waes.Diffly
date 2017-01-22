@@ -83,7 +83,7 @@ namespace Waes.Diffly.UnitTest.Core.Domain
             var actual = _service.Diff(id);
 
             // assert
-            Assert.Equal(DiffResultType.NotEqual, actual.Item1);
+            Assert.Equal(DiffResultType.ContentDoNotMatch, actual.Item1);
             Assert.Equal(intExpectedDiffIndexes, actual.Item2);
         }
 
@@ -99,7 +99,7 @@ namespace Waes.Diffly.UnitTest.Core.Domain
 
             var actual = _service.Diff(id);
 
-            Assert.Equal(DiffResultType.NotEqualSize, actual.Item1);
+            Assert.Equal(DiffResultType.SizeDoNotMatch, actual.Item1);
             Assert.Empty(actual.Item2);
         }
     }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Net.Http;
 using Waes.Diffly.Api.Dtos;
 using Waes.Diffly.Core.Domain.Enums;
 using Waes.Diffly.Core.Interfaces.Domain;

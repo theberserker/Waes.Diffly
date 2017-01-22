@@ -3,7 +3,7 @@
     public enum DiffResultType
     {
         Equal = 0,
-        NotEqualSize = 1,
-        NotEqual = 2
+        SizeDoNotMatch = 1,
+        ContentDoNotMatch = 2
     }
 }

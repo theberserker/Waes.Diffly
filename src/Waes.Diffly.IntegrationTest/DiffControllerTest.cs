@@ -44,8 +44,8 @@ namespace Waes.Diffly.IntegrationTest
         /// <returns></returns>
         [Theory]
         [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", DiffResultType.Equal, 11)]
-        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "QUJDRERB", DiffResultType.NotEqualSize, 12)]
-        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "VGhpcyBpcyB3b3JraW5nIGdyZWF0Lg==", DiffResultType.NotEqual, 13)]
+        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "QUJDRERB", DiffResultType.SizeDoNotMatch, 12)]
+        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "VGhpcyBpcyB3b3JraW5nIGdyZWF0Lg==", DiffResultType.ContentDoNotMatch, 13)]
         public async Task PutToLeftAndPutToRightAndDiff_Returns200InAllCases_DiffResultAsExpected(
             string encodedDataLeft, string encodedDataRight, DiffResultType expectedResult, int id)
         {
@@ -135,7 +135,7 @@ namespace Waes.Diffly.IntegrationTest
             resultDto = JsonConvert.DeserializeObject<DiffResultDto>(responseString);
 
             // Assert
-            Assert.Equal(resultDto.Result, DiffResultType.NotEqualSize); // Test result of the 2st Diff
+            Assert.Equal(resultDto.Result, DiffResultType.SizeDoNotMatch); // Test result of the 2st Diff
         }
 
 
@@ -191,7 +191,7 @@ namespace Waes.Diffly.IntegrationTest
             var response7 = await _client.GetAsync(uriDiff);
             Assert.Equal(HttpStatusCode.OK, response7.StatusCode);
             var dto7 = await response7.ToDto<DiffResultDto>();
-            Assert.Equal(DiffResultType.NotEqual, dto7.Result);
+            Assert.Equal(DiffResultType.ContentDoNotMatch, dto7.Result);
         }
 
     }

@@ -78,11 +78,11 @@ namespace Waes.Diffly.Core.Domain.Entities
 
             if (Left.Length != Right.Length)
             {
-                return new Tuple<DiffResultType, IEnumerable<int>>(DiffResultType.NotEqualSize, Enumerable.Empty<int>());
+                return new Tuple<DiffResultType, IEnumerable<int>>(DiffResultType.SizeDoNotMatch, Enumerable.Empty<int>());
             }
 
             var diff = FindByteArrayDiff(Left, Right);
-            var resultType = diff.Any() ? DiffResultType.NotEqual : DiffResultType.Equal;
+            var resultType = diff.Any() ? DiffResultType.ContentDoNotMatch : DiffResultType.Equal;
 
             return new Tuple<DiffResultType, IEnumerable<int>>(resultType, diff);
         }
