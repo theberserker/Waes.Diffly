@@ -43,9 +43,9 @@ namespace Waes.Diffly.IntegrationTest
         /// <param name="expectedResult">Result expected from API.</param>
         /// <returns></returns>
         [Theory]
-        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", DiffResultType.Equal, 1)]
-        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "QUJDRERB", DiffResultType.NotEqualSize, 2)]
-        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "VGhpcyBpcyB3b3JraW5nIGdyZWF0Lg==", DiffResultType.NotEqual, 3)]
+        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", DiffResultType.Equal, 11)]
+        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "QUJDRERB", DiffResultType.NotEqualSize, 12)]
+        [InlineData("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==", "VGhpcyBpcyB3b3JraW5nIGdyZWF0Lg==", DiffResultType.NotEqual, 13)]
         public async Task PutToLeftAndPutToRightAndDiff_Returns200InAllCases_DiffResultAsExpected(
             string encodedDataLeft, string encodedDataRight, DiffResultType expectedResult, int id)
         {
@@ -166,13 +166,32 @@ namespace Waes.Diffly.IntegrationTest
             string uriDiff = _apiDiffFactory(id);
             string uriLeft = _apiLeftFactory(id);
             string uriRight = _apiRightFactory(id);
+            var zerosRequest = new DiffRequestDto("AAAAAA==");
 
             var response1 = await _client.GetAsync(uriDiff);
             Assert.Equal(HttpStatusCode.NotFound, response1.StatusCode);
 
-            var request2Body = new DiffRequestDto("AAAAAA==").ToJsonHttpContent();
-            var response2 = await _client.PutAsync(uriLeft, request2Body);
+            var response2 = await _client.PutAsync(uriLeft, zerosRequest.ToJsonHttpContent());
             Assert.Equal(HttpStatusCode.Created, response2.StatusCode);
+
+            var response3 = await _client.GetAsync(uriDiff);
+            Assert.Equal(HttpStatusCode.NotFound, response3.StatusCode);
+
+            var response4 = await _client.PutAsync(uriRight, zerosRequest.ToJsonHttpContent());
+            Assert.Equal(HttpStatusCode.Created, response4.StatusCode);
+
+            var response5 = await _client.GetAsync(uriDiff);
+            Assert.Equal(HttpStatusCode.OK, response5.StatusCode);
+            var dto5 = await response5.ToDto<DiffResultDto>();
+            Assert.Equal(DiffResultType.Equal, dto5.Result);
+
+            var response6 = await _client.PutAsync(uriRight, new DiffRequestDto("AQABAQ==").ToJsonHttpContent());
+            Assert.Equal(HttpStatusCode.Created, response6.StatusCode);
+
+            var response7 = await _client.GetAsync(uriDiff);
+            Assert.Equal(HttpStatusCode.OK, response7.StatusCode);
+            var dto7 = await response7.ToDto<DiffResultDto>();
+            Assert.Equal(DiffResultType.NotEqual, dto7.Result);
         }
 
     }
