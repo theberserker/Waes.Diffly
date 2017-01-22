@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Waes.Diffly.Api.Dtos;
 
 namespace Waes.Diffly.IntegrationTest.Extension
 {
@@ -10,7 +11,7 @@ namespace Waes.Diffly.IntegrationTest.Extension
         /// <summary>
         /// Generates a HttpContent with JSON serialized value.
         /// </summary>
-        public static HttpContent ToJsonHttpContent(this object value)
+        public static HttpContent ToJsonHttpContent(this DiffRequestDto value)
         {
             HttpContent content = new StringContent(JsonConvert.SerializeObject(value));
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");

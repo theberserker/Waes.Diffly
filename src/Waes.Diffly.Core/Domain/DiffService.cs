@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Waes.Diffly.Api.Dtos;
 using Waes.Diffly.Api.Dtos.Enums;
 using Waes.Diffly.Core.Domain.Entities;
 using Waes.Diffly.Core.Domain.Enums;
@@ -53,7 +51,7 @@ namespace Waes.Diffly.Core.Domain
             var entity = _repository.GetById(id);
             if (entity == null)
             {
-                throw new DiffDomainException($"Can not perform diff because no entry was provided for this id.");
+                throw new DiffDataIncompleteException($"Can not perform diff because no entry was provided for this id.");
             }
 
             return entity.GetDiffResult();

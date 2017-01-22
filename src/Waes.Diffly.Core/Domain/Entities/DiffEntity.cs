@@ -153,11 +153,11 @@ namespace Waes.Diffly.Core.Domain.Entities
         {
             if (Left == null)
             {
-                throw new DiffDomainException("Can not diff because left side was not provided.");
+                throw new DiffDataIncompleteException("Can not diff because left side was not provided.");
             }
             if (Right == null)
             {
-                throw new DiffDomainException("Can not diff because right side was not provided.");
+                throw new DiffDataIncompleteException("Can not diff because right side was not provided.");
             }
         }
     }

@@ -7,6 +7,15 @@ namespace Waes.Diffly.Api.Dtos
 {
     public class DiffRequestDto
     {
+        public DiffRequestDto()
+        {
+        }
+
+        public DiffRequestDto(string data)
+        {
+            this.EncodedData = data;
+        }
+
         public string EncodedData { get; set; }
     }
 }

@@ -17,6 +17,13 @@ namespace Waes.Diffly.Api.Infrastructure
 
         public void SetResponseIfDomainException(ExceptionContext context)
         {
+            var diffDataMissingException = context.Exception as DiffDataIncompleteException;
+            if (diffDataMissingException != null)
+            {
+                context.Result = new NotFoundResult();
+                return;
+            }
+
             var diffDomainException = context.Exception as DiffDomainException;
             if (diffDomainException != null)
             {

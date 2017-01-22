@@ -50,8 +50,8 @@ namespace Waes.Diffly.IntegrationTest
             string encodedDataLeft, string encodedDataRight, DiffResultType expectedResult, int id)
         {
             // Arrange
-            var requestDto1 = new DiffRequestDto() { EncodedData = encodedDataLeft};
-            var requestDto2 = new DiffRequestDto() { EncodedData = encodedDataRight};
+            var requestDto1 = new DiffRequestDto(encodedDataLeft);
+            var requestDto2 = new DiffRequestDto(encodedDataRight);
 
             // Act
             var response1 = await _client.PutAsync(_apiLeftFactory(id), requestDto1.ToJsonHttpContent());
@@ -65,7 +65,7 @@ namespace Waes.Diffly.IntegrationTest
 
             var responseString = await responseDiff.Content.ReadAsStringAsync();
             var resultDto = JsonConvert.DeserializeObject<DiffResultDto>(responseString);
-            
+
             // Assert
             Assert.Equal(resultDto.Result, expectedResult);
         }
@@ -75,7 +75,7 @@ namespace Waes.Diffly.IntegrationTest
         {
             // Arrange
             int id = 20;
-            var requestDto = new DiffRequestDto() { EncodedData = "VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==" };
+            var requestDto = new DiffRequestDto("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==");
             string leftUri = _apiLeftFactory(id);
 
             // Act
@@ -94,7 +94,7 @@ namespace Waes.Diffly.IntegrationTest
         public async Task DiffSideRouteConstraint_WhenRouteIsNotLeftOrRight_404Returned()
         {
             int id = 30;
-            var requestDto = new DiffRequestDto() { EncodedData = "VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==" };
+            var requestDto = new DiffRequestDto("VGhpcyBpcyB3b3JraW5nIGdyZWF0IQ==");
             string uri = $"{_apiBase}{id}/something";
 
             var response = await _client.PostAsync(uri, requestDto.ToJsonHttpContent());
@@ -107,8 +107,8 @@ namespace Waes.Diffly.IntegrationTest
         {
             // Arrange
             int id = 40;
-            var requestDto1 = new DiffRequestDto() { EncodedData = "RXF1YWw=" }; //"Equal"
-            var requestDto2 = new DiffRequestDto() { EncodedData = "RXF1YWw=" };
+            var requestDto1 = new DiffRequestDto("RXF1YWw="); //"Equal"
+            var requestDto2 = new DiffRequestDto("RXF1YWw=");
 
             // Act - submit left, right & do diff
             var response1 = await _client.PutAsync(_apiLeftFactory(id), requestDto1.ToJsonHttpContent());
@@ -125,7 +125,7 @@ namespace Waes.Diffly.IntegrationTest
             Assert.Equal(resultDto.Result, DiffResultType.Equal); // Test result of the 1st Diff
 
             // Act - update right value & do diff
-            requestDto2 = new DiffRequestDto() { EncodedData = "Tm90RXF1YWw=" }; //"NotEqual"
+            requestDto2 = new DiffRequestDto("Tm90RXF1YWw="); //"NotEqual"
             var response4 = await _client.PutAsync(_apiRightFactory(id), requestDto2.ToJsonHttpContent());
             response4.EnsureSuccessStatusCode();
 
@@ -136,6 +136,43 @@ namespace Waes.Diffly.IntegrationTest
 
             // Assert
             Assert.Equal(resultDto.Result, DiffResultType.NotEqualSize); // Test result of the 2st Diff
+        }
+
+
+        /*
+        1	GET /v1/diff/1	404 Not Found
+        2	PUT /v1/diff/1/left   "data": "AAAAAA==" - 	201 Created
+        3	GET /v1/diff/1	404 Not Found
+        4	PUT /v1/diff/1/right   "data": "AAAAAA==" - 	201 Created
+        5	GET /v1/diff/1	200 OK   "diffResultType": "Equals" - 
+        6	PUT /v1/diff/1/right   "data": "AQABAQ==" - 	201 Created
+        7	GET /v1/diff/1	200 OK   "diffResultType": "ContentDoNotMatch",
+          "diffs": [
+                  "offset": 0,
+              "length": 1
+            },
+                  "offset": 2,
+              "length": 2
+            }
+          ] - 
+        8	PUT /v1/diff/1/left    "data": "AAA=" - 	201 Created
+        9	GET /v1/diff/1	200 OK   "diffResultType": "SizeDoNotMatch" - 
+        10	PUT /v1/diff/1/left    "data": null - 	400 Bad Request
+        */
+        [Fact]
+        public async Task AssignmentSampleInputOutput_Succeeds()
+        {
+            int id = 1;
+            string uriDiff = _apiDiffFactory(id);
+            string uriLeft = _apiLeftFactory(id);
+            string uriRight = _apiRightFactory(id);
+
+            var response1 = await _client.GetAsync(uriDiff);
+            Assert.Equal(HttpStatusCode.NotFound, response1.StatusCode);
+
+            var request2Body = new DiffRequestDto("AAAAAA==").ToJsonHttpContent();
+            var response2 = await _client.PutAsync(uriLeft, request2Body);
+            Assert.Equal(HttpStatusCode.Created, response2.StatusCode);
         }
 
     }
