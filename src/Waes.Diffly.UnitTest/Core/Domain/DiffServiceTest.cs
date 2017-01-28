@@ -65,16 +65,18 @@ namespace Waes.Diffly.UnitTest.Core.Domain
         /// <param name="i2">Second Int32 (4-bytes) to convert to byte array and compare.</param>
         /// <param name="expectedDiffIndexes">Comma-separated diff inexes expected to differ.</param>
         [Theory]
-        [InlineData(126, 127, "3")]
-        [InlineData(123456789, 127, "0,1,2,3")]
-        [InlineData(123456789, 21, "0,1,2")]
+        [InlineData(126, 127, "3,1")]
+        [InlineData(123456789, 127, "0,4")] //[7,91,205,21] vs [0,0,0,127]
+        [InlineData(int.MaxValue, 2130706431, "0,1")] //[127,255,255,255] vs [126,255,255,255] 
+        [InlineData(int.MaxValue, 2147418367, "2,1")] //[127,255,255,255] vs [127,255,0,255] 
+        [InlineData(int.MaxValue, 2130771712, "1,1|3,1")] //[127,255,255,255] vs [127,0,255,0] 
         public void Diff_TwoDifferentValuesAtLeftAndRightOfEqualLenght_ReturnsNotEqualAndCorrectDiffIndexes(int i1, int i2, string expectedDiffIndexes)
         {
             // arrange
             var bytes1 = TestHelper.GetBytes(i1);
             var bytes2 = TestHelper.GetBytes(i2);
             int id = 1;
-            var intExpectedDiffIndexes = expectedDiffIndexes.Split(',').Select(x => int.Parse(x));
+            var intExpectedDiffIndexes = TestHelper.FromTestStringToDiffDetail(expectedDiffIndexes);
 
             var entity = new DiffEntity(id, bytes1, bytes2);
             _mockRepository.Setup(x => x.GetById(id)).Returns(entity);
@@ -86,7 +88,6 @@ namespace Waes.Diffly.UnitTest.Core.Domain
             Assert.Equal(DiffResultType.ContentDoNotMatch, actual.Item1);
             Assert.Equal(intExpectedDiffIndexes, actual.Item2);
         }
-
 
         [Fact]
         public void Diff_TwoDifferentValuesAtLeftAndRightOfDifferentLenght_ReturnsNotEqualSize()

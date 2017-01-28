@@ -15,22 +15,29 @@ namespace Waes.Diffly.Api.Infrastructure
             base.OnException(context);
         }
 
+        /// <summary>
+        /// Handles the appropriate response status and message for the <see cref="DiffDomainException"/>. 
+        /// In case the there was a <see cref="DiffDataIncompleteException"/>, there is no data to compare for at least one of the sides.
+        /// In case it was any other DiffDomainException exception this was a client mistake and we report is as a BadRequest.
+        /// </summary>
+        /// <param name="context"></param>
         public void SetResponseIfDomainException(ExceptionContext context)
         {
-            var diffDataMissingException = context.Exception as DiffDataIncompleteException;
-            if (diffDataMissingException != null)
-            {
-                context.Result = new NotFoundResult();
-                return;
-            }
-
             var diffDomainException = context.Exception as DiffDomainException;
             if (diffDomainException != null)
             {
-                var errorDto = new ErrorDto { Message = diffDomainException.Message };
-                var errorResult = new JsonResult(errorDto) { StatusCode = (int)HttpStatusCode.BadRequest };
-                context.Result = errorResult;
+                if (diffDomainException is DiffDataIncompleteException)
+                {
+                    context.Result = new NotFoundResult();
+                }
+                else
+                {
+                    var errorDto = new ErrorDto { Message = diffDomainException.Message };
+                    var errorResult = new JsonResult(errorDto) { StatusCode = (int)HttpStatusCode.BadRequest };
+                    context.Result = errorResult;
+                }
             }
+
         }
     }
 }

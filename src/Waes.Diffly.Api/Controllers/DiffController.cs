@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Net;
 using Waes.Diffly.Api.Dtos;
 using Waes.Diffly.Core.Domain.Enums;
@@ -26,7 +27,8 @@ namespace Waes.Diffly.Api.Controllers
         public IActionResult Get(int id)
         {
             var diffResult = _service.Diff(id);
-            var dto = new DiffResultDto(diffResult.Item1, diffResult.Item2);
+            var detail = diffResult.Item2.Select(x => new DiffDetailDto { Offset = x.Offset, Length = x.Length }); // TODO: Automapper
+            var dto = new DiffResultDto(diffResult.Item1, detail); 
             return Ok(dto);
         }
 

@@ -17,7 +17,7 @@ namespace Waes.Diffly.Api.Infrastructure
 
         public void OnException(ExceptionContext context)
         {
-            _logger.LogInformation("ERROR" + context.Exception);
+            _logger.LogError("ERROR" + context.Exception);
         }
     }
 }

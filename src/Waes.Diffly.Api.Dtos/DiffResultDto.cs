@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +17,7 @@ namespace Waes.Diffly.Api.Dtos
         {
         }
 
-        public DiffResultDto(DiffResultType result, IEnumerable<int> diffs) : this()
+        public DiffResultDto(DiffResultType result, IEnumerable<DiffDetailDto> diffs) : this()
         {
             this.Result = result;
             this.Diffs = diffs;
@@ -24,11 +26,12 @@ namespace Waes.Diffly.Api.Dtos
         /// <summary>
         /// Result enum of the diff operation.
         /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
         public DiffResultType Result { get; set; }
 
         /// <summary>
         /// Indexes that differ in the diff operation.
         /// </summary>
-        public IEnumerable<int> Diffs { get; set; }
+        public IEnumerable<DiffDetailDto> Diffs { get; set; }
     }
 }

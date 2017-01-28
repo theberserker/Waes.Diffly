@@ -29,16 +29,17 @@ The last GET request will return `{"result":0,"diffs":[]}` since there is no dif
 
 Sample Responses
 -------------
-GET _{host}/v1/diff/{ID}/_ returns responses of format `{"result":0,"diffs":[]}` where the `result` is the enum value of [DiffResultType](https://github.com/theberserker/Waes.Diffly/blob/master/src/Waes.Diffly.Api.Dtos/Enums/DiffResultType.cs). `diffs` array contains indexes that differ in the provided byte arrays. It has value only in case `"result":2` (`DiffResultType.NotEqual`)
+GET _{host}/v1/diff/{ID}/_ returns responses of format `{"result":0,"diffs":[]}` where the `result` is the string value of a enum [DiffResultType](https://github.com/theberserker/Waes.Diffly/blob/master/src/Waes.Diffly.Api.Dtos/Enums/DiffResultType.cs). `diffs` array contains indexes that differ in the provided byte arrays. It has value only in case `"result":"ContentDoNotMatch"`
 
-Client errors are returned with status 400-Bad Request with JSON document containing message property, e.g.  `{ "message": "Can not perform diff because no entry was provided for this id." }`
+In case there is no content to diff on the endpoint requesed, or not both sides were provided,  404 - Not Found is returned.
+General client errors are returned with status 400-Bad Request with JSON document containing message property, e.g.  `{ "message": "The provided string was not in the Base64 format." }`
 
 
 [Waes.Diffly.Api.Dtos](https://github.com/theberserker/Waes.Diffly/tree/master/src/Waes.Diffly.Api.Dtos) assembly contains all the DTOs that are required to work with the API in order to write a .NET client.
 
 ----------
 
-Remarks and TODO
+Suggestions for Improvements
 -------------
- - TODO: Improve diff algorithm. A lot.
- - DELETE for _/left_ and _/right_ is not yet supported.
+ - Adding an POST & PUT for /v1/diff/{ID} that would accept left and right side in single request might be benefitial to the client consumig the service
+ - Returning 400 when only one of the sides is present for diffing would be more appropriate, since this seems more as a client error (and not 404-not found)

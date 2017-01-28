@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -166,7 +167,7 @@ namespace Waes.Diffly.IntegrationTest
             string uriDiff = _apiDiffFactory(id);
             string uriLeft = _apiLeftFactory(id);
             string uriRight = _apiRightFactory(id);
-            var zerosRequest = new DiffRequestDto("AAAAAA==");
+            var zerosRequest = new DiffRequestDto("AAAAAA=="); // 0000
 
             var response1 = await _client.GetAsync(uriDiff);
             Assert.Equal(HttpStatusCode.NotFound, response1.StatusCode);
@@ -185,13 +186,27 @@ namespace Waes.Diffly.IntegrationTest
             var dto5 = await response5.ToDto<DiffResultDto>();
             Assert.Equal(DiffResultType.Equal, dto5.Result);
 
-            var response6 = await _client.PutAsync(uriRight, new DiffRequestDto("AQABAQ==").ToJsonHttpContent());
+            var response6 = await _client.PutAsync(uriRight, new DiffRequestDto("AQABAQ==").ToJsonHttpContent()); //1011
             Assert.Equal(HttpStatusCode.Created, response6.StatusCode);
 
             var response7 = await _client.GetAsync(uriDiff);
             Assert.Equal(HttpStatusCode.OK, response7.StatusCode);
             var dto7 = await response7.ToDto<DiffResultDto>();
             Assert.Equal(DiffResultType.ContentDoNotMatch, dto7.Result);
+            Assert.Equal(2, dto7.Diffs.Count());
+            Assert.Equal(0, dto7.Diffs.First().Offset);
+            Assert.Equal(1, dto7.Diffs.First().Length);
+            Assert.Equal(2, dto7.Diffs.Last().Offset);
+            Assert.Equal(2, dto7.Diffs.Last().Length);
+
+            var response8 = await _client.PutAsync(uriLeft, new DiffRequestDto("AAA=").ToJsonHttpContent());
+            Assert.Equal(HttpStatusCode.Created, response8.StatusCode);
+
+            var response9 = await _client.GetAsync(uriDiff);
+            Assert.Equal(HttpStatusCode.OK, response9.StatusCode);
+            var dto9 = await response9.ToDto<DiffResultDto>();
+            Assert.Equal(DiffResultType.SizeDoNotMatch, dto9.Result);
+
         }
 
     }

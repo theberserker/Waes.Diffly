@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Waes.Diffly.Api.Dtos;
+using Waes.Diffly.Core.Domain.Entities;
 
 namespace Waes.Diffly.UnitTest
 {
@@ -34,6 +36,19 @@ namespace Waes.Diffly.UnitTest
         {
             var bytes = GetBytes(value);
             return Convert.ToBase64String(bytes);
+        }
+
+        /// <summary>
+        /// Converts the string of format 0,1|2,2 to IEnumerable{DiffDetail}.
+        /// </summary>
+        /// <param name="diffs"></param>
+        /// <returns></returns>
+        internal static IEnumerable<DiffDetail> FromTestStringToDiffDetail(string diffs)
+        {
+            var pairs = diffs.Split('|');
+            return from stringPair in pairs
+                   let offsetLenghtPair = stringPair.Split(',')
+                   select new DiffDetail(int.Parse(offsetLenghtPair[0]), int.Parse(offsetLenghtPair[1]));
         }
     }
 }

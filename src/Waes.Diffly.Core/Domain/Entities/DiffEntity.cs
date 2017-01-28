@@ -14,7 +14,7 @@ namespace Waes.Diffly.Core.Domain.Entities
     {
         private byte[] _left;
         private byte[] _right;
-        private Tuple<DiffResultType, IEnumerable<int>> _diffResult; // cached current diff result
+        private Tuple<DiffResultType, IEnumerable<DiffDetail>> _diffResult; // cached current diff result
 
         public DiffEntity(int id, DiffSide side, string base64Value)
         {
@@ -63,7 +63,7 @@ namespace Waes.Diffly.Core.Domain.Entities
         /// <summary>
         /// Gets the diff result between left and right side.
         /// </summary>
-        public Tuple<DiffResultType, IEnumerable<int>> GetDiffResult()
+        public Tuple<DiffResultType, IEnumerable<DiffDetail>> GetDiffResult()
         {
             if (_diffResult == null)
             {
@@ -72,42 +72,67 @@ namespace Waes.Diffly.Core.Domain.Entities
             return _diffResult;
         }
 
-        private Tuple<DiffResultType, IEnumerable<int>> GetDiff()
+        private Tuple<DiffResultType, IEnumerable<DiffDetail>> GetDiff()
         {
             ThrowIfAnyDiffPropertyNull();
 
             if (Left.Length != Right.Length)
             {
-                return new Tuple<DiffResultType, IEnumerable<int>>(DiffResultType.SizeDoNotMatch, Enumerable.Empty<int>());
+                return new Tuple<DiffResultType, IEnumerable<DiffDetail>>(DiffResultType.SizeDoNotMatch, Enumerable.Empty<DiffDetail>());
             }
 
             var diff = FindByteArrayDiff(Left, Right);
             var resultType = diff.Any() ? DiffResultType.ContentDoNotMatch : DiffResultType.Equal;
 
-            return new Tuple<DiffResultType, IEnumerable<int>>(resultType, diff);
+            return new Tuple<DiffResultType, IEnumerable<DiffDetail>>(resultType, diff);
         }
 
         /// <summary>
         /// Finds the diffrences in the provided same lenght byte arrays.
-        /// TODO: We should really do smarter algorithm here.
+        /// Might still research to do smarter/more performant algorithm here.
         /// These are quite exotic (P/Invoke and unsafe code) suggesstions http://stackoverflow.com/questions/43289/comparing-two-byte-arrays-in-net
         /// </summary>
         /// <param name="bytes1">First set of bytes.</param>
         /// <param name="bytes2">Second set of bytes.</param>
         /// <returns></returns>
-        public IEnumerable<int> FindByteArrayDiff(byte[] bytes1, byte[] bytes2)
+        public IEnumerable<DiffDetail> FindByteArrayDiff(byte[] bytes1, byte[] bytes2)
         {
             if (bytes1.Length != bytes2.Length)
             {
                 throw new ArgumentException("Byte arrays are of different length. Method expects same lenght arguments.");
             }
 
+            int offset = 0;
+            int length = 0;
+
+            // my two-state state machine ;) pracitically we are in diffState when length > 0, but this reads better.
+            bool isInDiffState = false; 
+
             for (int i = 0; i < bytes1.Length; i++)
             {
+                if (!isInDiffState)
+                {
+                    offset = i;
+                }
                 if (bytes1[i] != bytes2[i])
                 {
-                    yield return i;
+                    isInDiffState = true;
+                    length++;
                 }
+                else if (isInDiffState)
+                {
+                    // there is no diff anymore. We can report the diff result we were tracking
+                    yield return new DiffDetail(offset, length);
+
+                    isInDiffState = false;
+                    length = 0;
+                }
+            }
+
+            // we have to report a result if the last part ended with diff.
+            if (isInDiffState)
+            {
+                yield return new DiffDetail(offset, length);
             }
         }
 
@@ -125,7 +150,7 @@ namespace Waes.Diffly.Core.Domain.Entities
             }
             catch (FormatException ex)
             {
-                throw new DiffDomainException("The provided string was not in the Base64 format", ex);
+                throw new DiffDomainException("The provided string was not in the Base64 format.", ex);
             }
         }
 

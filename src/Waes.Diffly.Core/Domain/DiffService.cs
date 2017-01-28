@@ -46,7 +46,7 @@ namespace Waes.Diffly.Core.Domain
         /// </summary>
         /// <param name="id">Id of the diff.</param>
         /// <returns></returns>
-        public Tuple<DiffResultType, IEnumerable<int>> Diff(int id)
+        public Tuple<DiffResultType, IEnumerable<DiffDetail>> Diff(int id)
         {
             var entity = _repository.GetById(id);
             if (entity == null)
