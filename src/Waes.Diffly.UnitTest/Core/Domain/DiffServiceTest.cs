@@ -73,9 +73,9 @@ namespace Waes.Diffly.UnitTest.Core.Domain
         public void Diff_TwoDifferentValuesAtLeftAndRightOfEqualLenght_ReturnsNotEqualAndCorrectDiffIndexes(int i1, int i2, string expectedDiffIndexes)
         {
             // arrange
+            int id = 1;
             var bytes1 = TestHelper.GetBytes(i1);
             var bytes2 = TestHelper.GetBytes(i2);
-            int id = 1;
             var intExpectedDiffIndexes = TestHelper.FromTestStringToDiffDetail(expectedDiffIndexes);
 
             var entity = new DiffEntity(id, bytes1, bytes2);
@@ -90,10 +90,34 @@ namespace Waes.Diffly.UnitTest.Core.Domain
         }
 
         [Fact]
+        public void Diff_TwoDifferentValuesAtLeftAndRightOfEqualLenghtByteArrays_ReturnsNotEqualAndCorrectDiffIndexes()
+        {
+            // arrange
+            int id = 1;
+            var bytes1 = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x10, 0x10, 0x10, 0x10 };
+            var bytes2 = new byte[] { 0x00, 0x10, 0x00, 0x10, 0x00, 0x10, 0x00, 0x00 };
+
+            var entity = new DiffEntity(id, bytes1, bytes2);
+            _mockRepository.Setup(x => x.GetById(id)).Returns(entity);
+
+            var expectedDiffs = new[]
+            {
+                new DiffDetail(1,1),
+                new DiffDetail(3,2),
+                new DiffDetail(6,2)
+            };
+
+            // act
+            var actual = _service.Diff(id);
+            Assert.Equal(DiffResultType.ContentDoNotMatch, actual.Item1);
+            Assert.True(expectedDiffs.SequenceEqual(actual.Item2));
+        }
+
+        [Fact]
         public void Diff_TwoDifferentValuesAtLeftAndRightOfDifferentLenght_ReturnsNotEqualSize()
         {
-            var bytes1 = TestHelper.GetBytes("ABC");
-            var bytes2 = TestHelper.GetBytes("AB");
+            var bytes1 = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x10, 0x10, 0x10, 0x10 };
+            var bytes2 = new byte[] { 0x00, 0x10, 0x00, 0x10, 0x00, 0x10, 0x00 };
             int id = 1;
             var entity = new DiffEntity(id, bytes1, bytes2);
             _mockRepository.Setup(x => x.GetById(id)).Returns(entity);
