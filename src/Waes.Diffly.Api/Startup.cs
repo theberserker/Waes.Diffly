@@ -51,13 +51,14 @@ namespace Waes.Diffly.Api
                     config.Filters.Add(new GlobalLoggingExceptionFilter(loggerFactory));
                     config.Filters.Add(new CustomExceptionFilterAttribute());
                 });
-            services.Configure<RouteOptions>(options =>options.ConstraintMap.Add(nameof(DiffSide), typeof(DiffSideRouteConstraint)));
+            services.Configure<RouteOptions>(options => options.ConstraintMap.Add(nameof(DiffSide), typeof(DiffSideRouteConstraint)));
 
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "4C Insights Diffly API", Version = "v1" });
                 var filePath = Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "Waes.Diffly.Api.xml");
                 c.IncludeXmlComments(filePath);
+                c.DescribeAllEnumsAsStrings();
             });
 
             // Application services
