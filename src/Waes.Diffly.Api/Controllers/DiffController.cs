@@ -19,8 +19,7 @@ namespace Waes.Diffly.Api.Controllers
 
 
         /// <summary>
-        /// Action that returns the diff for the provided id.
-        /// GET v1/diff/{id}
+        /// Returns the diff for the provided id.
         /// </summary>
         /// <returns>The diff result.</returns>
         [HttpGet("{id:int:min(1)}")]
@@ -33,8 +32,7 @@ namespace Waes.Diffly.Api.Controllers
         }
 
         /// <summary>
-        /// Action that creates the instance to diff on the provided side.
-        /// POST /v1/diff/{id}/left or POST /v1/diff/{id}/right 
+        /// Creates the instance to diff on the provided side.
         /// </summary>
         /// <returns>Only HTTP status code.</returns>
         [HttpPost("{id:int:min(1)}/{side:DiffSide}")]
@@ -45,8 +43,7 @@ namespace Waes.Diffly.Api.Controllers
         }
 
         /// <summary>
-        /// Action that creates or updates the instance to diff on the provided side.
-        /// PUT /v1/diff/{id}/left or PUT /v1/diff/{id}/right 
+        /// Creates or updates the instance to diff on the provided side.
         /// </summary>
         /// <returns>Only HTTP status code.</returns>
         [HttpPut("{id:int:min(1)}/{side:DiffSide}")]

@@ -1,4 +1,4 @@
-﻿{
+{
   "dependencies": {
     //"Microsoft.ApplicationInsights.AspNetCore": "1.0.0",
     "Microsoft.AspNetCore.Mvc": "1.0.1",
@@ -12,6 +12,8 @@
     "Microsoft.Extensions.Logging.Console": "1.0.0",
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
+    "Swashbuckle.AspNetCore": "1.0.0-rc1",
+    "Swashbuckle.AspNetCore.SwaggerUi": "1.0.0-rc1",
     "Waes.Diffly.Api.Dtos": "1.0.0-*",
     "Waes.Diffly.Core": "1.0.0-*"
   },
@@ -37,7 +39,8 @@
 
   "buildOptions": {
     "emitEntryPoint": true,
-    "preserveCompilationContext": true
+    "preserveCompilationContext": true,
+    "xmlDoc": true
   },
 
   "runtimeOptions": {

@@ -10,6 +10,9 @@ using Waes.Diffly.Core.Domain.Enums;
 using Waes.Diffly.Core.Interfaces.Domain;
 using Waes.Diffly.Core.Interfaces.Repositories;
 using Waes.Diffly.Core.Repositories;
+using Swashbuckle.AspNetCore.Swagger;
+using System.IO;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Waes.Diffly.Api
 {
@@ -50,6 +53,13 @@ namespace Waes.Diffly.Api
                 });
             services.Configure<RouteOptions>(options =>options.ConstraintMap.Add(nameof(DiffSide), typeof(DiffSideRouteConstraint)));
 
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "4C Insights Diffly API", Version = "v1" });
+                var filePath = Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "Waes.Diffly.Api.xml");
+                c.IncludeXmlComments(filePath);
+            });
+
             // Application services
             services.AddSingleton<IDiffRepository, DiffRepository>();
             services.AddSingleton<IDiffService, DiffService>(); // this can be a singleton until it will have some state.
@@ -64,8 +74,13 @@ namespace Waes.Diffly.Api
             //app.UseApplicationInsightsRequestTelemetry();
 
             //app.UseApplicationInsightsExceptionTelemetry();
-
+            
             app.UseMvc();
+            app.UseSwagger();
+            app.UseSwaggerUi(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "4C Insights Diffly API");
+            });
         }
     }
 }

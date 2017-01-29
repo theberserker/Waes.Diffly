@@ -39,6 +39,14 @@ General client errors are returned with status 400-Bad Request with JSON documen
 
 ----------
 
+Testing
+-------------
+ - Waes.Diffly.UnitTest
+ - Waes.Diffly.IntegrationTest 
+
+Implemented using xUnit. Both projects can be run from Visual Studio or console in projects root, by running `dotnet test`.
+
+
 Suggestions for Improvements
 -------------
  - Adding an POST & PUT for /v1/diff/{ID} that would accept left and right side in single request might be benefitial to the client consumig the service
