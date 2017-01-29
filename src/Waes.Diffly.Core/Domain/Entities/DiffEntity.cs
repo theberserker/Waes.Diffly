@@ -94,7 +94,7 @@ namespace Waes.Diffly.Core.Domain.Entities
         /// </summary>
         /// <param name="bytes1">First set of bytes.</param>
         /// <param name="bytes2">Second set of bytes.</param>
-        /// <returns></returns>
+        /// <returns>IEnumerable of differences in the provided same-length byte arrays.</returns>
         public IEnumerable<DiffDetail> FindByteArrayDiff(byte[] bytes1, byte[] bytes2)
         {
             if (bytes1.Length != bytes2.Length)

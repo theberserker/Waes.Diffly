@@ -42,10 +42,10 @@ namespace Waes.Diffly.Core.Domain
 
         /// <summary>
         /// Diffs the byte arrays stored for the provided id and retuns the result. Throws exception if any of the data is not present.
-        /// TODO: This is a long running operation if not cached. If this service was consumed by some GUI app, this could be started as a task on a background thread (Task.Factory.StartNew)!
+        /// TODO: This can be a long running operation if result is not cached. If this service was consumed by some GUI app, this could be started as a task on a background thread (Task.Factory.StartNew)!
         /// </summary>
         /// <param name="id">Id of the diff.</param>
-        /// <returns></returns>
+        /// <returns>The tuple of result type and differences in case they exist.</returns>
         public Tuple<DiffResultType, IEnumerable<DiffDetail>> Diff(int id)
         {
             var entity = _repository.GetById(id);
